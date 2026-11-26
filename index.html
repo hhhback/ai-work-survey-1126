@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>교육 만족도 조사</title>
+<meta name="description" content="2026학년도 임직원 AI 업무활용 역량강화교육 만족도 조사 (익명)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  /* 강의 덱과 같은 색: 어두운 바탕 + 파란 강조 */
+  :root {
+    --bg: #000; --surface: #161616; --surface-2: #1f1f1f; --border: #333;
+    --text: #fff; --text-sub: #d5d5d5; --text-dim: #aaa;
+    --accent: #58A6FF; --accent-dim: rgba(88,166,255,.14);
+    --good: #3FB950; --warn: #F78166;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #f6f7f9; --surface: #fff; --surface-2: #f0f2f5; --border: #d9dde3;
+            --text: #111; --text-sub: #333; --text-dim: #666;
+            --accent: #1f6fd1; --accent-dim: rgba(31,111,209,.1); --good: #1a7f37; --warn: #c4432b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+         font-size: 18px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  main { max-width: 720px; margin: 0 auto; padding: 28px 16px 140px; }
+  header { margin-bottom: 24px; }
+  .kicker { color: var(--accent); font-weight: 700; font-size: 15px; letter-spacing: .02em; }
+  h1 { font-size: clamp(28px, 6vw, 40px); line-height: 1.25; margin: 6px 0 10px; letter-spacing: -.01em; }
+  .lead { color: var(--text-sub); margin: 0; }
+  .lead b { color: var(--text); }
+  .q { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px 18px; margin: 14px 0; }
+  .q.missing { border-color: var(--warn); }
+  .q h2 { font-size: 20px; margin: 0 0 14px; line-height: 1.4; }
+  .q h2 .num { color: var(--accent); margin-right: 6px; }
+  .q h2 .req { color: var(--warn); font-size: 15px; margin-left: 6px; white-space: nowrap; }
+  .q .hint { color: var(--text-dim); font-size: 15px; margin: -8px 0 12px; }
+  /* 1~5점: 큰 동그라미 버튼 */
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .scale label { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+  .scale span.dot { width: 100%; max-width: 64px; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
+                    font-size: 22px; font-weight: 800; border: 2px solid var(--border); background: var(--surface-2); transition: .15s; }
+  .scale small { color: var(--text-dim); font-size: 13px; text-align: center; min-height: 1.2em; }
+  .scale input:checked + span.dot { background: var(--accent); border-color: var(--accent); color: var(--bg); transform: scale(1.06); }
+  /* 고르기: 큰 줄 버튼 */
+  .opts { display: grid; gap: 8px; }
+  .opts label { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; border: 2px solid var(--border);
+                background: var(--surface-2); cursor: pointer; font-size: 18px; transition: .15s; }
+  .opts label:has(input:checked) { border-color: var(--accent); background: var(--accent-dim); font-weight: 700; }
+  .opts .box { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--text-dim); flex: none; display: grid; place-items: center; }
+  .opts input[type=checkbox] + .box { border-radius: 6px; }
+  .opts input:checked + .box { border-color: var(--accent); background: var(--accent); }
+  .opts input:checked + .box::after { content: '✓'; color: var(--bg); font-size: 14px; font-weight: 900; }
+  input[type=radio], input[type=checkbox] { position: absolute; opacity: 0; pointer-events: none; }
+  input:focus-visible + .box, input:focus-visible + span.dot { outline: 3px solid var(--accent); outline-offset: 3px; }
+  textarea { width: 100%; min-height: 110px; resize: vertical; border-radius: 14px; border: 2px solid var(--border); background: var(--surface-2);
+             color: var(--text); font: inherit; padding: 14px; }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .q.pbl { border-color: var(--accent); background: linear-gradient(180deg, var(--accent-dim), transparent 70%), var(--surface); }
+  /* 아래 고정 제출 줄 */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px);
+         border-top: 1px solid var(--border); padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .bar .in { max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+  .progress { flex: 1; color: var(--text-dim); font-size: 15px; }
+  .progress .track { height: 6px; border-radius: 99px; background: var(--surface-2); margin-top: 6px; overflow: hidden; }
+  .progress .fill { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  button { font: inherit; font-size: 19px; font-weight: 800; border: 0; border-radius: 14px; padding: 14px 26px; background: var(--accent); color: var(--bg); cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .msg { color: var(--warn); font-weight: 700; margin: 10px 0 0; min-height: 1.5em; }
+  .done { text-align: center; padding: 18vh 16px; }
+  .done .big { font-size: 64px; }
+  .done h1 { margin-top: 12px; }
+  .notice { background: var(--surface-2); border: 1px dashed var(--warn); color: var(--text-sub); border-radius: 12px; padding: 10px 14px; font-size: 15px; margin-bottom: 16px; }
+  @media (max-width: 420px) { .scale small { font-size: 11px; } button { padding: 14px 18px; } }
+</style>
+</head>
+<body>
+<main id="app">
+  <div id="setupNotice" class="notice" hidden>미리보기 화면입니다. 응답 저장 연결 전이라 제출해도 저장되지 않아요.</div>
+  <header>
+    <div class="kicker">2026학년도 임직원 AI 업무활용 역량강화교육</div>
+    <h1>오늘 교육, 어떠셨나요?</h1>
+    <p class="lead"><b>익명</b>이에요. 이름은 받지 않아요. 1분이면 끝나요.</p>
+  </header>
+  <form id="survey" novalidate></form>
+  <p class="msg" id="msg" role="alert"></p>
+</main>
+
+<div class="bar" id="bar">
+  <div class="in">
+    <div class="progress"><span id="count">0 / 0 답함</span><div class="track"><div class="fill" id="fill"></div></div></div>
+    <button type="submit" form="survey" id="send">제출하기</button>
+  </div>
+</div>
+
+<script>
+// 구글 폼 연결 정보: 구글폼_만들기.gs 실행 로그의 CONFIG 값을 그대로 넣는다
+const CONFIG = { action: '', entries: {} };
+
+// 질문 목록 (구글폼_만들기.gs의 key·순서와 같아야 함)
+const QUESTIONS = [
+  { key: 'overall',  type: 'scale', title: '교육 전반에 만족하십니까?', required: true },
+  { key: 'useful',   type: 'scale', title: '교육 내용이 내 업무에 도움이 되었습니까?', required: true },
+  { key: 'clear',    type: 'scale', title: '강사의 설명이 이해하기 쉬웠습니까?', required: true },
+  { key: 'level',    type: 'radio', title: '실습 난이도는 어땠습니까?', options: ['쉬웠다', '적당했다', '어려웠다'] },
+  { key: 'time',     type: 'radio', title: '교육 시간(2시간)은 어땠습니까?', options: ['짧았다', '적당했다', '길었다'] },
+  { key: 'best',     type: 'check', title: '가장 도움이 된 실습은?', hint: '여러 개 골라도 돼요',
+    options: ['Lab 1 메모 한 장', 'Lab 2 표 합치기', 'Lab 2+ 크롬 공공데이터', 'Lab 3 주간보고', '보너스 플러그인·Gmail'] },
+  { key: 'tomorrow', type: 'radio', title: '내일 업무에 바로 써 볼 것 같습니까?', options: ['꼭 써 볼 것 같다', '아마 써 볼 것 같다', '아직은 어렵다'] },
+  { key: 'chore',    type: 'text',  title: '우리 부서의 귀찮은 일 1개를 적어 주세요', pbl: true,
+    hint: '예) 매주 부서별 실적 파일을 모아 한 표로 합치기 · 다음 교육의 재료가 됩니다' },
+  { key: 'followup', type: 'radio', title: '부서별 업무 자동화 후속 교육에 참여하고 싶으십니까?', options: ['참여하고 싶다', '관심 있다', '지금은 없다'] },
+  { key: 'comment',  type: 'text',  title: '하고 싶은 말', hint: '선택이에요' },
+];
+const SCALE_LABELS = ['전혀 아니다', '', '보통', '', '매우 그렇다'];
+
+const form = document.getElementById('survey');
+const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function render() {
+  form.innerHTML = QUESTIONS.map((q, i) => {
+    const head = `<h2><span class="num">${i + 1}</span>${esc(q.title)}${q.required ? '<span class="req">필수</span>' : ''}</h2>` +
+                 (q.hint ? `<p class="hint">${esc(q.hint)}</p>` : '');
+    let body = '';
+    if (q.type === 'scale') {
+      body = `<div class="scale">${[1, 2, 3, 4, 5].map((v) =>
+        `<label><input type="radio" name="${q.key}" value="${v}"><span class="dot">${v}</span><small>${SCALE_LABELS[v - 1]}</small></label>`).join('')}</div>`;
+    } else if (q.type === 'radio' || q.type === 'check') {
+      const t = q.type === 'radio' ? 'radio' : 'checkbox';
+      body = `<div class="opts">${q.options.map((o) =>
+        `<label><input type="${t}" name="${q.key}" value="${esc(o)}"><span class="box"></span>${esc(o)}</label>`).join('')}</div>`;
+    } else {
+      body = `<textarea name="${q.key}" maxlength="1000" aria-label="${esc(q.title)}"></textarea>`;
+    }
+    return `<section class="q${q.pbl ? ' pbl' : ''}" data-key="${q.key}">${head}${body}</section>`;
+  }).join('');
+}
+
+function answers() {
+  const fd = new FormData(form);
+  const out = {};
+  QUESTIONS.forEach((q) => {
+    const v = fd.getAll(q.key).map((x) => String(x).trim()).filter(Boolean);
+    if (v.length) out[q.key] = v;
+  });
+  return out;
+}
+
+function updateProgress() {
+  const n = Object.keys(answers()).length;
+  document.getElementById('count').textContent = `${n} / ${QUESTIONS.length} 답함`;
+  document.getElementById('fill').style.width = `${(n / QUESTIONS.length) * 100}%`;
+  document.querySelectorAll('.q.missing').forEach((el) => { if (answers()[el.dataset.key]) el.classList.remove('missing'); });
+}
+
+async function submit(e) {
+  e.preventDefault();
+  const a = answers();
+  const missing = QUESTIONS.filter((q) => q.required && !a[q.key]);
+  const msg = document.getElementById('msg');
+  if (missing.length) {
+    missing.forEach((q) => form.querySelector(`[data-key="${q.key}"]`).classList.add('missing'));
+    form.querySelector(`[data-key="${missing[0].key}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    msg.textContent = `필수 질문 ${missing.length}개가 남았어요.`;
+    return;
+  }
+  msg.textContent = '';
+  if (!CONFIG.action) { msg.textContent = '아직 응답 저장이 연결되지 않은 미리보기예요.'; return; }
+
+  const body = new URLSearchParams();
+  Object.entries(a).forEach(([k, vals]) => vals.forEach((v) => body.append(CONFIG.entries[k], v)));
+  const btn = document.getElementById('send');
+  btn.disabled = true; btn.textContent = '보내는 중…';
+  try {
+    // 구글 폼은 다른 사이트의 응답 내용을 돌려주지 않으므로(no-cors) 보내기만 한다
+    await fetch(CONFIG.action, { method: 'POST', mode: 'no-cors', body });
+    document.getElementById('app').innerHTML =
+      '<div class="done"><div class="big">🙏</div><h1>감사합니다!</h1><p class="lead">적어 주신 <b>귀찮은 일</b>은 다음 교육의 재료가 됩니다.</p></div>';
+    document.getElementById('bar').remove();
+  } catch (err) {
+    btn.disabled = false; btn.textContent = '제출하기';
+    msg.textContent = '전송에 실패했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.';
+  }
+}
+
+render();
+document.getElementById('setupNotice').hidden = Boolean(CONFIG.action);
+form.addEventListener('change', updateProgress);
+form.addEventListener('input', updateProgress);
+form.addEventListener('submit', submit);
+updateProgress();
+</script>
+</body>
+</html>

@@ -93,8 +93,22 @@
 </div>
 
 <script>
-// 구글 폼 연결 정보: 구글폼_만들기.gs 실행 로그의 CONFIG 값을 그대로 넣는다
-const CONFIG = { action: '', entries: {} };
+// 구글 폼 연결 정보 (2026-11-28 연결: 2026학년도 임직원 AI 업무활용 역량강화교육 만족도 조사)
+const CONFIG = {
+  action: 'https://docs.google.com/forms/d/e/1FAIpQLScLwwNivgq-p_VJd4yMQ3NITD3-m5bS3XrR_aGPQJ3PgUGLEg/formResponse',
+  entries: {
+    overall:  'entry.1121798103',
+    useful:   'entry.1990045664',
+    clear:    'entry.412780473',
+    level:    'entry.890601290',
+    time:     'entry.71475544',
+    best:     'entry.1763347776',
+    tomorrow: 'entry.1229849212',
+    chore:    'entry.1715062628',
+    followup: 'entry.1122938045',
+    comment:  'entry.1471180461',
+  },
+};
 
 // 질문 목록 (구글폼_만들기.gs의 key·순서와 같아야 함)
 const QUESTIONS = [
